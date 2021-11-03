@@ -14,36 +14,42 @@ struct HashChain {
         V val;
         Elem* next;
     };
+
     uint size;
     Elem** tab;
+
     // Initialisierung mit Größe n.
     HashChain (uint n){
         size = n;
         tab = new Elem* [n] ();
     }
+
     // Eintrag mit Schlüssel k und Wert v (am Anfang der jeweiligen
     // Liste) hinzufügen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
     // Der Resultatwert ist immer true.
-    bool put (K k, V& v){
+    bool put (K k, V v){
         uint i = hashval(k) % size;
         for (Elem* p = tab[i]; p != nullptr; p = p->next) {
-            if(p->key == k){
-
+            if (p->key == k) {
             }
         }
-        ....... hier steht noch was ....
+        return true;
     }
 
     // Wert zum Schlüssel k über den Referenzparameter v zurückliefern,
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unverändert, und der Resultatwert ist false.
-    bool get (K k, V& v)
+    bool get (K k, V& v){
+        return true;
+    }
 
     // Eintrag mit Schlüssel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove (K k)
+    bool remove (K k){
+        return false;
+    }
 
     // Inhalt der Tabelle zu Testzwecken ausgeben:
     // Pro Eintrag eine Zeile bestehend aus der Nummer des Platzes,
@@ -52,7 +58,9 @@ struct HashChain {
     // Leere Plätze werden nicht ausgegeben.
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // für die Typen K und V geben.
-    void dump ()
+    void dump (){
+
+    }
 };
 
 // Sondierungssequenz mit Schlüsseltyp K für lineare Sondierung.
@@ -61,7 +69,9 @@ struct HashChain {
 template <typename K>
 struct LinProb {
     // Initialisierung der Sequenz mit Schlüssel k und Tabellengröße n.
-    LinProb (K k, uint n)
+    LinProb (K k, uint n){
+
+    }
 
     // Den ersten bzw. nächsten Wert der Sequenz liefern.
     // Nach einem Aufruf des Konstruktors darf diese Funktion also
@@ -77,13 +87,23 @@ struct LinProb {
     // gespeichert werden.
     // Dann kann bei realistischen Tabellengrößen n kein Überlauf
     // auftreten.
-    uint next ()
+    uint next (){
+
+    }
 };
 
 // Sondierungssequenz mit Schlüsseltyp K für quadratische Sondierung,
 // analog zu LinProb.
 template <typename K>
 struct QuadProb {
+
+    QuadProb (K k, uint n){
+
+    }
+
+    uint next (){
+
+    }
 };
 
 // Sondierungssequenz mit Schlüsseltyp K für doppelte Streuung.
@@ -94,6 +114,13 @@ struct QuadProb {
 // Ansonsten analog zu LinProb.
 template <typename K>
 struct DblHash {
+    DblHash (K k, uint n){
+
+    }
+
+    uint next (){
+
+    }
 };
 
 // Mit offener Adressierung implementierte Streuwerttabelle mit
@@ -117,10 +144,10 @@ struct HashOpen {
     uint size;
     Elem* tab;
 
-    HashChain (uint n){
-        size = n;
-        tab = new Elem* [n] ();
-    }
+    //HashChain (uint n){
+     //   size = n;
+       // tab = new Elem* [n] ();
+    //}
     // Eintrag mit Schlüssel k und Wert v (am Anfang der jeweiligen
     // Liste) hinzufügen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
@@ -132,12 +159,16 @@ struct HashOpen {
     // Wert zum Schlüssel k über den Referenzparameter v zurückliefern,
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unverändert, und der Resultatwert ist false.
-    bool get (K k, V& v)
+    bool get (K k, V& v){
+
+    }
 
     // Eintrag mit Schlüssel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove (K k)
+    bool remove (K k){
+
+    }
 
     // Inhalt der Tabelle zu Testzwecken ausgeben:
     // Pro Eintrag eine Zeile bestehend aus der Nummer des Platzes,
@@ -146,6 +177,8 @@ struct HashOpen {
     // Leere Plätze werden nicht ausgegeben.
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // für die Typen K und V geben.
-    void dump ()
+    void dump (){
+
+    }
 
 };
