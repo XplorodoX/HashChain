@@ -21,19 +21,28 @@ struct HashChain {
     // Initialisierung mit Größe n.
     HashChain (uint n){
         size = n;
-        tab = new Elem* [n] ();
+        tab = new Elem* [size] ();
     }
 
     // Eintrag mit Schlüssel k und Wert v (am Anfang der jeweiligen
     // Liste) hinzufügen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
     // Der Resultatwert ist immer true.
-    bool put (K k, V v){
+    bool put(K k, V v) {
         uint i = hashval(k) % size;
         for (Elem* p = tab[i]; p != nullptr; p = p->next) {
-            if (p->key == k) {
+            if(p->key == k) {
+                p->val = v;
+                return true;
+            } else{
+                continue;
             }
         }
+        Elem* p = new Elem;
+        p->key = k;
+        p->val = v;
+        p->next = tab[i];
+        tab[i] = p;
         return true;
     }
 
@@ -41,38 +50,69 @@ struct HashChain {
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unverändert, und der Resultatwert ist false.
     bool get (K k, V& v){
-        return true;
+        uint i = hashval(k) % size;
+        for (Elem* p = tab[i]; p != nullptr; p = p->next) {
+            if(p->key == k) {
+                v = p->val;
+                return true;
+            } else{
+                continue;
+            }
+        }
+        return false;
     }
 
     // Eintrag mit Schlüssel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove (K k){
+    bool remove (K k) {
+        uint i = hashval(k) % size;
+        for (Elem* p = tab[i]; p != nullptr; p = p->next){
+            if(tab[i]->key == k) {
+                tab[i] = tab[i]->next;
+                return true;
+            }
+
+            if ((p->next)->key == k){
+                p->next = (p->next)->next;
+                return true;
+            }
+        }
         return false;
     }
 
-    // Inhalt der Tabelle zu Testzwecken ausgeben:
+
+        // Inhalt der Tabelle zu Testzwecken ausgeben:
     // Pro Eintrag eine Zeile bestehend aus der Nummer des Platzes,
     // Schlüssel und Wert, jeweils getrennt durch genau ein Leerzeichen.
     // Dieses Ausgabeformat muss exakt eingehalten werden.
     // Leere Plätze werden nicht ausgegeben.
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // für die Typen K und V geben.
-    void dump (){
-
+    void dump(){
+        for (uint i = 0; i < size; i++) {
+            for (Elem* p = tab[i]; p != nullptr; p = p->next) {
+                cout << i << " " << p->key << " " << p->val << endl;
+            }
+        }
     }
 };
 
 // Sondierungssequenz mit Schlüsseltyp K für lineare Sondierung.
 // An der Stelle, an der LinProb für einen bestimmten Schlüsseltyp K
 // verwendet wird, muss wiederum uint hashval (K) bekannt sein.
+
 template <typename K>
 struct LinProb {
+    uint size, j, s;
+    K key;
     // Initialisierung der Sequenz mit Schlüssel k und Tabellengröße n.
-    LinProb (K k, uint n){
-
+    LinProb (K k, uint n) {
+        key = k;
+        size = n;
+        s = hashval(key) % size;
+        j = size;
     }
-
     // Den ersten bzw. nächsten Wert der Sequenz liefern.
     // Nach einem Aufruf des Konstruktors darf diese Funktion also
     // bis zu n-mal aufgerufen werden.
@@ -88,7 +128,9 @@ struct LinProb {
     // Dann kann bei realistischen Tabellengrößen n kein Überlauf
     // auftreten.
     uint next (){
-
+        s = (s + j) % size;
+        j++;
+        return s;
     }
 };
 
@@ -96,13 +138,18 @@ struct LinProb {
 // analog zu LinProb.
 template <typename K>
 struct QuadProb {
-
+    uint size, s, j;
+    K key;
     QuadProb (K k, uint n){
-
+        key = k;
+        size = n;
+        s = hashval(key) % size;
+        j = size;
     }
-
     uint next (){
-
+        s = (s + j * j) % size;
+        j++;
+        return s;
     }
 };
 
@@ -114,12 +161,18 @@ struct QuadProb {
 // Ansonsten analog zu LinProb.
 template <typename K>
 struct DblHash {
+    uint size, s, j;
+    K key;
     DblHash (K k, uint n){
-
+        key = k;
+        size = n;
+        s = hashval(key) % size;
+        j = size;
     }
-
     uint next (){
-
+        s = (s + hashval2(key, size) * j) % size;
+        j++;
+        return s;
     }
 };
 
@@ -141,33 +194,79 @@ struct HashOpen {
         V val;
         Kind kind;
     };
+
     uint size;
     Elem* tab;
 
-    //HashChain (uint n){
-     //   size = n;
-       // tab = new Elem* [n] ();
-    //}
-    // Eintrag mit Schlüssel k und Wert v (am Anfang der jeweiligen
+    HashOpen(uint n){
+        size = n;
+        tab = new Elem[size];
+        for (uint i = 0; i < size; i++) {
+            tab[i].kind = Empty;
+        }
+    }
+
+    // Eintrag mit Schlüssel k (brechnet durch LinProb()) und Wert v (am Anfang der jeweiligen
     // Liste) hinzufügen (wenn es noch keinen solchen Eintrag gibt)
     // bzw. ersetzen (wenn es bereits einen gibt).
     // Der Resultatwert ist immer true.
-    bool put (K k, V& v){
-        uint i = hashval(k) % size;
+    bool put(K k, V v){
+        S s(k, size);
+        uint j = s.next();
+        while (tab[j].kind != Empty) {
+            if (tab[j].kind == delted) {
+                tab[j].key = k;
+                tab[j].val = v;
+                tab[j].kind = Regular;
+                return true;
+            }
+            j = s.next();
+        }
+        tab[j].key = k;
+        tab[j].val = v;
+        tab[j].kind = Regular;
+        return true;
     }
 
     // Wert zum Schlüssel k über den Referenzparameter v zurückliefern,
     // falls vorhanden; der Resultatwert ist in diesem Fall true.
     // Andernfalls bleibt v unverändert, und der Resultatwert ist false.
-    bool get (K k, V& v){
-
+    bool get(K k, V& v){
+        S s(k, size);
+        uint j = s.next();
+        while (tab[j].kind != Empty) {
+            if (tab[j].kind == delted) {
+                j = s.next();
+                continue;
+            }
+            if (tab[j].key == k) {
+                v = tab[j].val;
+                return true;
+            }
+            j = s.next();
+        }
+        return false;
     }
 
     // Eintrag mit Schlüssel k entfernen, falls vorhanden;
     // der Resultatwert ist in diesem Fall true.
     // Andernfalls wirkungslos, und der Resultatwert ist false.
-    bool remove (K k){
 
+    bool remove(K k){
+        S s(k, size);
+        uint j = s.next();
+        while (tab[j].kind != Empty) {
+            if (tab[j].kind == delted) {
+                j = s.next();
+                continue;
+            }
+            if (tab[j].key == k) {
+                tab[j].kind = delted;
+                return true;
+            }
+            j = s.next();
+        }
+        return false;
     }
 
     // Inhalt der Tabelle zu Testzwecken ausgeben:
@@ -178,7 +277,12 @@ struct HashOpen {
     // Bei Verwendung von dump muss es passende Ausgabeoperatoren (<<)
     // für die Typen K und V geben.
     void dump (){
-
+        for (uint i = 0; i < size; i++) {
+            if (tab[i].kind == Regular) {
+                cout << i << " " << tab[i].key << " " << tab[i].val << endl;
+            } else if (tab[i].kind == delted) {
+                cout << i << endl;
+            }
+        }
     }
-
 };
