@@ -1,3 +1,7 @@
+/**
+*Copyright 2021 Florian Merlau, Christian Bylsch, Sven Knödler, Gianni Balbo
+*/
+
 // Vorzeichenlose ganze Zahl.
 using uint = unsigned int;
 
