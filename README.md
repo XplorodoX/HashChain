@@ -1,9 +1,15 @@
 # HashChain
 
-Hashtest.sh -> zum aus testen ob alles nach Vorgaben funtkionniert. (Vorgegeben)
+Hashtest.sh
 
-hashing.h -> hier wird die HashingChain und HashingOpen implementiert. (Zum selber implementieren und dann später in der hashtest.cpp zu integrieren)
+This script is used to test if everything is working as specified.
 
-hashtest.cpp -> enhält die Main funktion und das Hauptprogramm zum ausführen der hashing.h Testweiße.
+Hashing.h
 
-Copyright to Florian Merlau, Christian Byloisch, Sven Knödler, Gianni Balbo
+In this file, the implementation of the HashingChain and HashingOpen is provided. The user can implement this themselves and later integrate it into the hashtest.cpp.
+
+Hashtest.cpp
+
+This file contains the main function and the main program to test the functionality of Hashing.h.
+
+Copyright (c) 2023 Florian Merlau, Christian Byloisch, Sven Knödler, Gianni Balbo. All rights reserved.
